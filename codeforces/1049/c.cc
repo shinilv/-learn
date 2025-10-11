@@ -21,7 +21,6 @@ void solve() {
             mi2 = max(mi2, -2 * a[i] - i);
         }
     }
-    
     cout << sum + max(max(mx + mi, mx2 + mi2), ans) << '\n';
 }
 

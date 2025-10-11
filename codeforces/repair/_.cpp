@@ -1,104 +1,49 @@
 #include <bits/stdc++.h>
-using namespace std;
-#define int long long
-const int MOD = 998244353;
 
 void solve() {
-    int n, m, v;
-    cin >> n >> m >> v;
-    vector<int> a(n + 1);
-    for (int i = 1; i <= n; i++) cin >> a[i];
-
-    vector<vector<int>> g(n + 1);
-    vector<bool> vis(n + 1, false);
-    vector<int> p(n + 1, -1), path;
-    set<vector<int>> cycs;
-
-    while (m--) {
-        int u, v;
-        cin >> u >> v;
-        g[u].push_back(v);
-        g[v].push_back(u);
+    int n;
+    std::cin >> n;
+    std::vector<int> a(n);
+    std::map<int, int> mp;
+    for (int i = 0; i < n; i++) {
+        std::cin >> a[i];
+        mp[a[i]]++;
     }
-
-    auto dfs = [&](auto&& dfs, int u) -> void {
-        vis[u] = true;
-        path.push_back(u);
-
-        for (int v : g[u]) {
-            if (v == p[u]) continue; 
-
-            if (vis[v]) {
-                vector<int> cyc;
-                auto it = find(path.begin(), path.end(), v); 
-                for (; it != path.end(); ++it) cyc.push_back(*it);
-                sort(cyc.begin(), cyc.end()); 
-                if (!cycs.count(cyc)) {  
-                    cycs.insert(cyc);  
-                }
-            } else {
-                p[v] = u;
-                dfs(dfs, v);
+    int p = 0;
+    for (int i = 1; i < n; i++) {
+        if (a[i] > a[i - 1]) {
+            p = 1;
+            break;
+        }
+    }
+    if (!p || mp.size() == 1) {
+        for (int i = n - 1; i >= 0; i--) {
+            std::cout << a[i] << " \n"[i == 0];
+        }
+        return;
+    }
+    int l = -1, r = -1;
+    for (int i = n - 1; i >= 0; i--) {
+        for (int j = i - 1; j >= 0; j--) {
+            if (a[i] > a[j]) {
+                l = j, r = i;
+                break;
             }
         }
-
-        vis[u] = false;
-        path.pop_back();
-    };
-
-    int ans = 1;
-
-    for (int i = 1; i <= n; i++) {
-        if (!vis[i]) dfs(dfs, i);
-    }
-
-    vector<int> st(n + 1, 0);
-
-    for (const auto& idx : cycs) {
-        vector<int> cyc;
-        for (auto x : idx) cyc.push_back(a[x]), st[x]++;
-        int cnt = cyc.size();
-        sort(cyc.begin(), cyc.end());
-
-        if (cyc.back() == -1 && cnt % 2 == 0) {
-            ans = ans * v % MOD;
-        } else {
-            for (int i = 0; i < cnt; i++) {
-                if (cyc[i] != -1) {
-                    if (cyc[i] != cyc.back()) {
-                        cout << "0\n";
-                        return;
-                    }
-                }
-            }
+        if (l != -1) {
+            break;
         }
     }
-    cout << cycs.size() << '\n';
-    for (auto c : cycs) {
-        for(auto x : c) {
-            cout << x << ' ';
-        }
-        cout << '\n';
+    std::swap(a[l], a[r]);
+    sort(a.begin() + l + 1, a.end());
+    for (int i = 0; i < n; i++) {
+        std::cout << a[i] << " \n"[i == n - 1];
     }
-
-    for (int i = 1; i <= n; i++) {
-        if (!st[i]) {
-            if (a[i] == -1) {
-                ans = (ans * v) % MOD;  
-            }
-        }
-    }
-
-    cout << ans << '\n';  
 }
 
-signed main() {
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-    int t;
-    cin >> t;
-    while (t--) {
-        solve();  
-    }
+int main() {
+    int t = 1;
+    // std::cin >> t;
+    while (t--) solve();
     return 0;
 }
